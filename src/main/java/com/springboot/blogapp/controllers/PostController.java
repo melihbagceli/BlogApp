@@ -5,8 +5,10 @@ import com.springboot.blogapp.services.PostService;
 import com.springboot.blogapp.utils.AppConstants;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -20,11 +22,13 @@ public class PostController {
         this.postService = postService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     // Create Post
     @PostMapping("")
-    public ResponseEntity<PostDto> createPost(@RequestBody PostDto postDto){
+    public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto){
         return new ResponseEntity<>(postService.createPost(postDto), HttpStatus.CREATED);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/bulk")
     public ResponseEntity<?> createPostWithList(@RequestBody List<PostDto> postDtoList){
         return new ResponseEntity<>(postService.createPost(postDtoList), HttpStatus.CREATED);
@@ -43,10 +47,12 @@ public class PostController {
     public ResponseEntity<PostDto> findPostById(@PathVariable(name = "postId") long postId){
         return new ResponseEntity<>(postService.getPostById(postId), HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{postId}")
-    public ResponseEntity<PostDto> updatePostById(@PathVariable(name = "postId") long postId, @RequestBody PostDto postDto){
+    public ResponseEntity<PostDto> updatePostById(@Valid @PathVariable(name = "postId") long postId, @RequestBody PostDto postDto){
         return new ResponseEntity<>(postService.updatePostById(postId,postDto), HttpStatus.OK);
     }
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{postId}")
     public ResponseEntity<String> deletePostById(@PathVariable(name = "postId") Long postId){
         postService.deletePostById(postId);
